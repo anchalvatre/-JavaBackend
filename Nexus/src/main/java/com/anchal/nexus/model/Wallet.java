@@ -1,12 +1,24 @@
 package com.anchal.nexus.model;
 
 public class Wallet {
-    // private UUID walletId;
-    private Money money; 
 
-    public Wallet(Money money){
-        // this.walletId = UUID.randomUUID();
-        this.money = money;
+    private double value;
+
+    public Wallet(double value) {
+        this.value = value;
     }
+
+    public void earnMoney(double value) {
+        this.value += value;
+    }
+
+    public void spendMoney(double value) {
+        this.value -= value;
+    }
+
+    public double getValue() {
+        return this.value;
+    }
+
 
 }

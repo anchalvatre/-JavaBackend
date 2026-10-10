@@ -75,7 +75,7 @@
             <configuration>
                 <archive>
                     <manifest>
-                        <mainClass>com.battlearena.app.App</mainClass> 
+                        <mainClass>com.anchal.nexus.App</mainClass> 
                    </manifest>
                 </archive>
             </configuration>
@@ -86,7 +86,7 @@
             <version>3.5.0</version>
 
             <configuration>
-                <mainClass>com.battlearena.app.App</mainClass>
+                <mainClass>com.anchal.nexus.App</mainClass>
             </configuration>
         </plugin>
       </plugins>
