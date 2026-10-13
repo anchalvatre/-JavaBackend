@@ -7,14 +7,13 @@ public class Market {
 
     private static Set<Asset> assetsInMarket = new LinkedHashSet<>();
 
-    public static void addInMarket(Asset asset) {
-        
-        if (asset == null) 
+    static void addInMarket(Asset asset) {
+        if (asset == null)
             throw new IllegalArgumentException("asset is null");
         assetsInMarket.add(asset);
     }
 
-    public static void removeFromMarket(Asset asset) {
+    static void removeFromMarket(Asset asset) {
         if (asset == null)
             throw new IllegalArgumentException("asset is null");
         if (!assetsInMarket.contains(asset))
@@ -26,31 +25,24 @@ public class Market {
         return Set.copyOf(assetsInMarket);
     }
 
-    public static void sellAsset(Asset asset) {
-        User currentOwner = asset.getOwner();
-        System.out.println(currentOwner + " : user " + currentOwner.getWallet().getValue());
-        currentOwner.getWallet().earnMoney(asset.getValue());
-        currentOwner.removeAsset(asset);
-        System.out.println(currentOwner + " : user ----------- " + currentOwner.getWallet().getValue());
-    }
-
     public static void purchaseAsset(Asset asset, User newOwner) {
 
         System.out.println("enter purchasae asset");
         if (newOwner == null)
             throw new IllegalArgumentException("newOwner null");
-        if (asset.getOwnerId().equals(newOwner.getUserId()))
-            throw new IllegalArgumentException("new and currentOwner are smae");
-        if (newOwner.getWallet().getValue() < asset.getValue())
-            throw new IllegalArgumentException("new owner is poor ");
-        if(!Market.getAllAssetInMarket().contains(asset)) 
+        if (asset == null)
+            throw new IllegalArgumentException("asset is null");
+        if (!Market.getAllAssetInMarket().contains(asset))
             throw new IllegalArgumentException("asset is not in market");
-        sellAsset(asset);
-        asset.updateOwner(newOwner);
-        newOwner.addAsset(asset);
-        newOwner.getWallet().spendMoney(asset.getValue());
-        newOwner.removeFromMarket(asset);
 
+        User currentOwner = asset.getOwner();
+        if (currentOwner == null)
+            throw new IllegalCallerException("curent owner is null");
+        if (currentOwner.getUserId().equals(newOwner.getUserId()))
+            throw new IllegalCallerException("currentOwner is new Owner");
+
+        newOwner.purchseAsset(asset, currentOwner);
+        Market.removeFromMarket(asset);
     }
 
 }

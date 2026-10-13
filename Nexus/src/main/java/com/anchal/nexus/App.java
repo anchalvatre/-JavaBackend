@@ -1,5 +1,6 @@
 package com.anchal.nexus;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -7,7 +8,6 @@ import java.util.Scanner;
 import com.anchal.nexus.model.Asset;
 import com.anchal.nexus.model.Market;
 import com.anchal.nexus.model.User;
-import com.anchal.nexus.model.Wallet;
 
 /**
  * Hello world!
@@ -17,12 +17,9 @@ public class App {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Hello World!");
-        Wallet wallet = new Wallet(1000d);
-        Wallet walletMahek = new Wallet(1000d);
-        User anchal = new User("anchal", wallet);
-        User mahek = new User("makek", walletMahek);
-        Asset house = new Asset("hosue", 100d, anchal);
-        anchal.addAsset(house);
+        User anchal = new User("anchal", BigDecimal.valueOf(10000));
+        User mahek = new User("makek", BigDecimal.valueOf(10000));
+        Asset house = new Asset("hosue", BigDecimal.valueOf(5000), anchal);
         boolean checkMarket = false;
         int count = 1;
         System.out.println(anchal);
@@ -43,8 +40,6 @@ public class App {
             System.out.println(anchal);
 
         }
-
-        anchal.addInMarket(house);
         sc.close();
     }
 }
