@@ -25,6 +25,14 @@ public class User {
         return wallet.getValue();
     }
 
+    void earnMoneyAndSellAsset(BigDecimal value, User newOwenr, Asset asset) {
+        if(this.getUserId().equals(newOwenr.getUserId()))
+            throw new IllegalArgumentException("invalid newOnewr");
+        if(assets.contains(asset)) throw new IllegalArgumentException("asset not present of current owenr");
+        wallet.earnMoney(value);
+        assets.remove(asset);
+    }
+
     public String getName() {
         return name;
     }
@@ -37,14 +45,22 @@ public class User {
         if (!assets.contains(newAsset))
             throw new IllegalArgumentException("asset not present ");
         assets.remove(newAsset);
-        wallet.earnMoney(newAsset.getValue());
     }
 
     void addAsset(Asset asset) {
         assets.add(asset);
     }
 
-    void purchseAsset(Asset newAsset, User currentOwner) {
+    static void transfer(User buyer, User seller, Asset asset) {
+        Wallet.transfer(buyer.wallet, seller.wallet, asset);
+    }
+
+    void purchaseAsset(Asset asset) {
+        assets.add(asset);
+        asset.updateOwner(this);
+    }
+
+    void purchaseAsset(Asset newAsset, User currentOwner) {
         
         BigDecimal newOwnerWalletValue = getWalletValue();
 
@@ -74,16 +90,16 @@ public class User {
         return Set.copyOf(assets);
     }
 
-    public void addInMarket(Asset asset) {
+    public void addInMarket(Asset asset, Market market) {
         if (!userId.equals(asset.getOwnerId()))
             throw new IllegalArgumentException("asset does not belong to user");
-        Market.addInMarket(asset);
+        market.addInMarket(asset);
     }
 
-    public void removeFromMarket(Asset asset) {
+    public void removeFromMarket(Asset asset, Market market) {
         if (!userId.equals(asset.getOwnerId()))
             throw new IllegalArgumentException("asset does not belong to user");
-        Market.removeFromMarket(asset);
+        market.removeFromMarket(asset);
     }
 
     @Override

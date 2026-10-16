@@ -50,6 +50,6 @@ public class Asset {
     }
 
     public String toString() {
-        return name;
+        return name + " owner : " + owner.getName();
     }
 }

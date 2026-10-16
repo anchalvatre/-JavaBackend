@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class Wallet {
 
+    private static final Object TRANSFER_LOCK = new Object();
     private BigDecimal value;
 
     public Wallet(BigDecimal value) {
@@ -35,6 +36,26 @@ public class Wallet {
 
     public BigDecimal getValue() {
         return this.value;
+    }
+
+    static void transfer(Wallet buyerWallet, Wallet sellerWallet, Asset asset) {
+
+        validateTransfer(buyerWallet, sellerWallet, asset);
+
+        synchronized (TRANSFER_LOCK) {
+            BigDecimal buyersNewBalance = buyerWallet.value.subtract(asset.getValue());
+            BigDecimal sellerNewBalance = sellerWallet.value.add(asset.getValue());
+            buyerWallet.value = buyersNewBalance;
+            sellerWallet.value = sellerNewBalance;
+
+        }
+    }
+
+    static void validateTransfer(Wallet buyerWallet, Wallet sellerWallet, Asset asset) {
+        if (asset == null)
+            throw new IllegalArgumentException("aset is null");
+        if (buyerWallet.value.compareTo(asset.getValue()) < 0)
+            throw new IllegalArgumentException("buyer is poor");
     }
 
 }

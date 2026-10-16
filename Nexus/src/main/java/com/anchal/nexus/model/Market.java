@@ -5,15 +5,15 @@ import java.util.Set;
 
 public class Market {
 
-    private static Set<Asset> assetsInMarket = new LinkedHashSet<>();
+    private Set<Asset> assetsInMarket = new LinkedHashSet<>();
 
-    static void addInMarket(Asset asset) {
+    void addInMarket(Asset asset) {
         if (asset == null)
             throw new IllegalArgumentException("asset is null");
         assetsInMarket.add(asset);
     }
 
-    static void removeFromMarket(Asset asset) {
+    void removeFromMarket(Asset asset) {
         if (asset == null)
             throw new IllegalArgumentException("asset is null");
         if (!assetsInMarket.contains(asset))
@@ -21,28 +21,34 @@ public class Market {
         assetsInMarket.remove(asset);
     }
 
-    public static Set<Asset> getAllAssetInMarket() {
+    public Set<Asset> getAllAssetInMarket() {
         return Set.copyOf(assetsInMarket);
     }
 
-    public static void purchaseAsset(Asset asset, User newOwner) {
+    public void purchaseAsset(Asset asset, User buyer) {
 
         System.out.println("enter purchasae asset");
-        if (newOwner == null)
-            throw new IllegalArgumentException("newOwner null");
         if (asset == null)
             throw new IllegalArgumentException("asset is null");
-        if (!Market.getAllAssetInMarket().contains(asset))
-            throw new IllegalArgumentException("asset is not in market");
+        synchronized (asset) {
+            User seller = asset.getOwner();
+            validate(asset, buyer, seller);
+            User.transfer(buyer, seller, asset);
+            seller.sellAsset(asset);
+            buyer.purchaseAsset(asset);
+        }
 
-        User currentOwner = asset.getOwner();
-        if (currentOwner == null)
-            throw new IllegalCallerException("curent owner is null");
-        if (currentOwner.getUserId().equals(newOwner.getUserId()))
-            throw new IllegalCallerException("currentOwner is new Owner");
-
-        newOwner.purchseAsset(asset, currentOwner);
-        Market.removeFromMarket(asset);
     }
 
+    public void validate(Asset asset, User buyer, User seller) {
+
+        if (seller == null)
+            throw new IllegalCallerException("curent owner is null");
+        if (buyer == null)
+            throw new IllegalArgumentException("newOwner null");
+        if (seller.getUserId().equals(buyer.getUserId()))
+            throw new IllegalCallerException("currentOwner is new Owner");
+        if (!getAllAssetInMarket().contains(asset))
+            throw new IllegalArgumentException("asset is not in market");
+    }
 }
