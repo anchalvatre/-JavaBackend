@@ -25,14 +25,6 @@ public class User {
         return wallet.getValue();
     }
 
-    void earnMoneyAndSellAsset(BigDecimal value, User newOwenr, Asset asset) {
-        if(this.getUserId().equals(newOwenr.getUserId()))
-            throw new IllegalArgumentException("invalid newOnewr");
-        if(assets.contains(asset)) throw new IllegalArgumentException("asset not present of current owenr");
-        wallet.earnMoney(value);
-        assets.remove(asset);
-    }
-
     public String getName() {
         return name;
     }
@@ -58,32 +50,6 @@ public class User {
     void purchaseAsset(Asset asset) {
         assets.add(asset);
         asset.updateOwner(this);
-    }
-
-    void purchaseAsset(Asset newAsset, User currentOwner) {
-        
-        BigDecimal newOwnerWalletValue = getWalletValue();
-
-        if (newAsset == null) throw new IllegalArgumentException("new asset is null");
-        if  (!assets.contains(newAsset))
-            throw new IllegalArgumentException("asset not present ");
-        if (wallet.getValue().compareTo(newAsset.getValue()) < 0)
-            throw new IllegalArgumentException("new owner is poor ");
-        // currentowner lose ownership
-        currentOwner.assets.remove(newAsset);
-        currentOwner.wallet.earnMoney(newAsset.getValue());
-        System.out.println(currentOwner.getWalletValue() +  "currentOwner wallet ");
- 
-        //new owner spend mony and take ownership
-        if (wallet.getValue().compareTo(newAsset.getValue()) < 0)
-            throw new IllegalArgumentException("new owner is poor ");
-        newOwnerWalletValue = newOwnerWalletValue.subtract(newAsset.getValue()); 
-        System.out.println("value after udpate is " + getWalletValue());
-        // wallet.spendMoney(newAsset.getValue());
-        assets.add(newAsset);
-        newAsset.updateOwner(this);
-        this.wallet.spendMoney(newAsset.getValue());
-    
     }
 
     public Set<Asset> getAllAsset() {

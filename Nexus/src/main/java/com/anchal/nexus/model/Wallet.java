@@ -16,38 +16,17 @@ public class Wallet {
 
     }
 
-    public void earnMoney(BigDecimal value) {
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-        if (value.compareTo(BigDecimal.ZERO) < 0)
-            throw new IllegalArgumentException("value is negative ");
-        this.value = this.value.add(value);
-    }
-
-    public void spendMoney(BigDecimal value) {
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-        if (value.compareTo(BigDecimal.ZERO) < 0)
-            throw new IllegalArgumentException("value is negative ");
-        if (this.value.compareTo(value) < 0)
-            throw new IllegalArgumentException("owner is poor");
-        this.value = this.value.subtract(value);
-    }
-
     public BigDecimal getValue() {
         return this.value;
     }
 
     static void transfer(Wallet buyerWallet, Wallet sellerWallet, Asset asset) {
-
-        validateTransfer(buyerWallet, sellerWallet, asset);
-
         synchronized (TRANSFER_LOCK) {
+            validateTransfer(buyerWallet, sellerWallet, asset);
             BigDecimal buyersNewBalance = buyerWallet.value.subtract(asset.getValue());
             BigDecimal sellerNewBalance = sellerWallet.value.add(asset.getValue());
             buyerWallet.value = buyersNewBalance;
             sellerWallet.value = sellerNewBalance;
-
         }
     }
 
