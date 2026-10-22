@@ -1,12 +1,19 @@
 package com.anchal.nexus;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 import com.anchal.nexus.records.Ledger;
+import com.anchal.nexus.utility.Utility;
 import com.anchal.nexus.model.Asset;
 import com.anchal.nexus.model.Market;
 import com.anchal.nexus.model.User;
@@ -17,7 +24,9 @@ import com.anchal.nexus.model.User;
  */
 public class App {
     static int a = 10;
-    public static void main(String[] args) {
+    private static Utility utility = new Utility();
+
+    public static void main(String[] args) throws IOException {
         //
         // test1 t1 = new test1();
         // test t = new test();
@@ -27,15 +36,21 @@ public class App {
         // }
         // });
         // t.start();
+        init();
 
         List<Ledger> ledger = new ArrayList<Ledger>();
         Market market = new Market();
         System.out.println("Hello World!");
-        User anchal = new User("anchal", BigDecimal.valueOf(10000));
-        User mahek = new User("makek", BigDecimal.valueOf(10000));
-        Asset house = new Asset("hosue", BigDecimal.valueOf(5000), anchal);
+        Optional<User> anchal, mahek;
+        anchal = utility.findUserByUserName("anchal");
+        mahek = utility.findUserByUserName("mahek");
+        if (anchal.isEmpty())
+            anchal = Optional.ofNullable(new User("anchal", BigDecimal.valueOf(10000)));
+        if (mahek.isEmpty())
+            mahek = Optional.ofNullable(new User("makek", BigDecimal.valueOf(10000)));
+        Asset house = new Asset("hosue", BigDecimal.valueOf(5000), anchal.get());
         System.out.println(anchal);
-        anchal.addInMarket(house, market);
+        anchal.get().addInMarket(house, market);
         Scanner sc = new Scanner(System.in);
         System.out.println(mahek);
         System.out.println("wanna check market ");
@@ -52,13 +67,26 @@ public class App {
             Asset selectedAsset = marketAssetList.get(sc.nextInt() - 1);
             UUID ownerId = house.getOwnerId();
             BigDecimal assetPrice = house.getValue();
-            market.purchaseAsset(selectedAsset, mahek);
-            ledger.add(new Ledger(ownerId, mahek.getUserId(),assetPrice,house.getName(), Instant.now()));
+            market.purchaseAsset(selectedAsset, mahek.get());
+            ledger.add(new Ledger(ownerId, mahek.get().getUserId(), assetPrice, house.getName(), Instant.now()));
             System.out.println(mahek);
             System.out.println(anchal);
             System.out.println(house.toString());
         }
         sc.close();
+    }
+
+    static void init() throws IOException {
+        boolean filesExists = Files.exists(Path.of("user.csv"));
+        if (!filesExists) {
+            List<String> userHeaders = Arrays.asList("id, name, walledId");
+            Files.write(Path.of("user.csv"), userHeaders);
+        }
+        boolean walletFileExist = Files.exists(Path.of("wallet.csv"));
+        if(!walletFileExist){
+            List<String> walletHeaders = List.of("id, value");
+            Files.write(Path.of("wallet.csv"), walletHeaders);
+        }
     }
 }
 

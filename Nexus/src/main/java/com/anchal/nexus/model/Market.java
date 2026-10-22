@@ -2,6 +2,7 @@ package com.anchal.nexus.model;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import com.anchal.nexus.enums.AssetStatus;
 
 public class Market {
 
@@ -10,6 +11,7 @@ public class Market {
     void addInMarket(Asset asset) {
         if (asset == null)
             throw new IllegalArgumentException("asset is null");
+        if(asset.getAssetStatus().equals(AssetStatus.RETIRED)) throw new IllegalArgumentException("Asset is retired");
         assetsInMarket.add(asset);
     }
 

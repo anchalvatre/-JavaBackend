@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.swing.text.html.Option;
-
+import com.anchal.nexus.enums.AssetStatus;
 import com.anchal.nexus.records.AssetPriceHistory;
 
 public class Asset {
@@ -18,6 +17,7 @@ public class Asset {
     private BigDecimal value;
     private User owner;
     private List<AssetPriceHistory> priceHistory = new ArrayList<>();
+    private AssetStatus assetStatus;
 
     public Asset(String name, BigDecimal value, User owner) {
         if (value == null || value.compareTo(BigDecimal.ZERO) < 0)
@@ -29,7 +29,17 @@ public class Asset {
         this.name = name;
         this.value = value;
         this.owner = owner;
+        this.assetStatus = AssetStatus.ACTIVE;
         owner.addAsset(this);
+    }
+
+    void retireAsset() {
+        if(assetStatus == AssetStatus.RETIRED) throw new IllegalArgumentException("asset is already retired");
+            assetStatus = AssetStatus.RETIRED;
+    }
+
+    public AssetStatus getAssetStatus() {
+        return assetStatus;
     }
 
     public synchronized void updatevalue(User caller, BigDecimal value) {
@@ -75,6 +85,6 @@ public class Asset {
     }
 
     public String toString() {
-        return name + " owner : " + owner.getName();
+        return name + " owner : " + owner.getUserName();
     }
 }
